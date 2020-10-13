@@ -8,7 +8,7 @@
 #include "gf3d_pipeline.h"
 #include "gf3d_commands.h"
 
-#define GF3D_VGRAPHICS_DISCRETE 1   //Choosing whether to use discrete [1] or integrated graphics [0]
+#define GF3D_VGRAPHICS_DISCRETE 2   //Choosing whether to use discrete [1] or integrated graphics [0] I'm not sure what 2 is but it does use GPU and runs faster.
 
 /**
  * @brief init Vulkan / SDL, setup device and initialize infrastructure for 3d graphics
