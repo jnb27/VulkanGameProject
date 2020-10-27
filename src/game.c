@@ -10,20 +10,24 @@
 #include "gf3d_model.h"
 #include "gf3d_camera.h"
 #include "gf3d_texture.h"
+#include "gf3d_entity.h"
+
+void dino_think(Entity *self);
 
 int main(int argc, char *argv[])
 {
 	//When programming in C all variables must be declared at the top.
 	int done = 0;
-	int a;
+	int a, i;
 	Uint8 validate = 0;
 	const Uint8 * keys;
 	Uint32 bufferFrame = 0;
 	VkCommandBuffer commandBuffer;
-	Model *model;
-	Matrix4 modelMat;
-	Model *model2;
-	Matrix4 modelMat2;
+	//Model *model;
+	//Matrix4 modelMat;
+	//Model *model2;
+	//Matrix4 modelMat2;
+	Entity *ent[6] = { 0 };
 
 	//Disables all Validation Layers at the start
 	for (a = 1; a < argc; a++)
@@ -48,35 +52,66 @@ int main(int argc, char *argv[])
 		);
 	slog_sync();
 
+	gf3d_entity_init(1024);
+
 	// main game loop
 	slog("gf3d main loop begin");
 	slog_sync();
-	//Loading 2 Dino Models to start doing stuff
+
+	for (i = 0; i < 2; i++)
+	{
+		ent[i] = gf3d_entity_new();
+		if (!ent[i])continue;
+		ent[i]->model = gf3d_model_load("dino");
+		ent[i]->think = dino_think;
+
+		if (i == 1)
+		{
+			ent[1]->model = gf3d_model_load("Robot");
+		}
+
+		//gfc_matrix_make_translation(ent[i]->modelMatrix, vector3d(gfc_crandom()*5, gfc_crandom()*5, gfc_crandom()*5));
+		/*
+		gfc_matrix_rotate(
+			ent[i]->modelMatrix,
+			ent[i]->modelMatrix,
+			gfc_crandom() * 0.01,
+			vector3d(gfc_crandom() * 5, gfc_crandom() * 5, gfc_crandom() * 5));*/
+	}
+
+	/*
+	ent1 = gf3d_entity_new();
+
+	if (ent1)
+	{
+		ent1->model = gf3d_model_load("dino");
+	}*/
+
+	/*Loading 2 Dino Models to start doing stuff
 	model = gf3d_model_load("dino");
 	gfc_matrix_identity(modelMat);
 	model2 = gf3d_model_load("dino");
 	gfc_matrix_identity(modelMat2);
-	gfc_matrix_make_translation(
+	/*gfc_matrix_make_translation(
 		modelMat2,
 		vector3d(10, 0, 0)
-		);
+		);*/
 	while (!done)
 	{
 		SDL_PumpEvents();   // update SDL's internal event structures
 		keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 		//update game things here
 
-		gf3d_vgraphics_rotate_camera(0.001);
-		gfc_matrix_rotate(
-			modelMat,
-			modelMat,
-			0.002,
-			vector3d(1, 0, 0));
-		gfc_matrix_rotate(
+		//gf3d_vgraphics_rotate_camera(0.001);
+
+		gf3d_entity_think_all();
+
+
+		/*gfc_matrix_rotate(
 			modelMat2,
 			modelMat2,
 			0.002,
-			vector3d(0, 0, 1));
+			vector3d(0, 0, 1));*/
 
 		// configure render command for graphics command pool
 		// for each mesh, get a command and configure it from the pool
@@ -84,21 +119,34 @@ int main(int argc, char *argv[])
 		gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_pipeline(), bufferFrame);
 		commandBuffer = gf3d_command_rendering_begin(bufferFrame);
 
-		gf3d_model_draw(model, bufferFrame, commandBuffer, modelMat);
-		gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
+		gf3d_entity_draw_all(bufferFrame, commandBuffer);
+
+		//gf3d_model_draw(model, bufferFrame, commandBuffer, modelMat);
+		//gf3d_model_draw(model2, bufferFrame, commandBuffer, modelMat2);
 
 		gf3d_command_rendering_end(commandBuffer);
 
 		gf3d_vgraphics_render_end(bufferFrame);
 
 		if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+
+		//Begin code for assigning movement to the models
+		if (keys[SDL_SCANCODE_W])
+		{
+			gfc_matrix_make_translation(ent[0]->modelMatrix, vector3d(12, 12, 0));
+		}
 	}
 
 	vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());
 	//cleanup
+	gf3d_entity_close();
 	slog("gf3d program end");
 	slog_sync();
 	return 0;
 }
 
+void dino_think(Entity *self)
+{
+	gfc_matrix_rotate(self->modelMatrix, self->modelMatrix, 0.002, vector3d(0, 0, 1));
+}
 /*eol@eof*/
