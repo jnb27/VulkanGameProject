@@ -17,6 +17,7 @@ typedef struct Entity_S
 	Uint8        _inuse;   /**<flag to make sure entities are not re-assigned while active*/
 	Model        *model;
 	Matrix4        modelMatrix;
+	Vector3D		position; 
 	void(*think)(struct Entity_S *self);
 } Entity;
 
@@ -56,7 +57,7 @@ void gf3d_entity_free(Entity *entity);
 
 void gf3d_entity_think_all();
 
-void gf3d_entity_close();
+void gf3d_entity_close(); 
 
 #endif
 

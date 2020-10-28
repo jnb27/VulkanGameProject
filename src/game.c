@@ -133,7 +133,23 @@ int main(int argc, char *argv[])
 		//Begin code for assigning movement to the models
 		if (keys[SDL_SCANCODE_W])
 		{
-			gfc_matrix_make_translation(ent[0]->modelMatrix, vector3d(12, 12, 0));
+			ent[0]->position.y -= 0.01; 
+			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
+		}
+		if (keys[SDL_SCANCODE_S])
+		{
+			ent[0]->position.y += 0.01;
+			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
+		}
+		if (keys[SDL_SCANCODE_A])
+		{
+			ent[0]->position.x += 0.01;
+			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
+		}
+		if (keys[SDL_SCANCODE_D])
+		{
+			ent[0]->position.x -= 0.01;
+			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
 		}
 	}
 
