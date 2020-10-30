@@ -14,10 +14,21 @@
 
 typedef struct Entity_S
 {
-	Uint8        _inuse;   /**<flag to make sure entities are not re-assigned while active*/
-	Model        *model;
-	Matrix4        modelMatrix;
+	Uint8			_inuse;   /**<flag to make sure entities are not re-assigned while active*/
+	Model			*model;
+	Matrix4			modelMatrix;
 	Vector3D		position; 
+	Vector3D		velocity;
+	Vector3D		scale;
+	Vector3D		rotation;
+	int				health;
+	int				mana;
+	int				experience;
+
+	//ItemData		*itemdata; // NULL if not Item
+	//MonsterData	*monsterdata; // NULL if not a monster
+	//ClientData	*clientdata;  // NULL if not a player
+
 	void(*think)(struct Entity_S *self);
 } Entity;
 

@@ -11,6 +11,7 @@
 #include "gf3d_camera.h"
 #include "gf3d_texture.h"
 #include "gf3d_entity.h"
+#include "Player.h"
 
 void dino_think(Entity *self);
 
@@ -58,33 +59,14 @@ int main(int argc, char *argv[])
 	slog("gf3d main loop begin");
 	slog_sync();
 
-	for (i = 0; i < 2; i++)
+	Entity *player = player_spawn(vector3d(0, 0, 0), "dino");
+	
+	/*for (i = 0; i < 1; i++)
 	{
 		ent[i] = gf3d_entity_new();
 		if (!ent[i])continue;
 		ent[i]->model = gf3d_model_load("dino");
 		ent[i]->think = dino_think;
-
-		if (i == 1)
-		{
-			ent[1]->model = gf3d_model_load("Robot");
-		}
-
-		//gfc_matrix_make_translation(ent[i]->modelMatrix, vector3d(gfc_crandom()*5, gfc_crandom()*5, gfc_crandom()*5));
-		/*
-		gfc_matrix_rotate(
-			ent[i]->modelMatrix,
-			ent[i]->modelMatrix,
-			gfc_crandom() * 0.01,
-			vector3d(gfc_crandom() * 5, gfc_crandom() * 5, gfc_crandom() * 5));*/
-	}
-
-	/*
-	ent1 = gf3d_entity_new();
-
-	if (ent1)
-	{
-		ent1->model = gf3d_model_load("dino");
 	}*/
 
 	/*Loading 2 Dino Models to start doing stuff
@@ -103,6 +85,8 @@ int main(int argc, char *argv[])
 		//update game things here
 
 		//gf3d_vgraphics_rotate_camera(0.001);
+
+		
 
 		gf3d_entity_think_all();
 
@@ -131,26 +115,7 @@ int main(int argc, char *argv[])
 		if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
 
 		//Begin code for assigning movement to the models
-		if (keys[SDL_SCANCODE_W])
-		{
-			ent[0]->position.y -= 0.01; 
-			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
-		}
-		if (keys[SDL_SCANCODE_S])
-		{
-			ent[0]->position.y += 0.01;
-			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
-		}
-		if (keys[SDL_SCANCODE_A])
-		{
-			ent[0]->position.x += 0.01;
-			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
-		}
-		if (keys[SDL_SCANCODE_D])
-		{
-			ent[0]->position.x -= 0.01;
-			gfc_matrix_make_translation(ent[0]->modelMatrix, ent[0]->position);
-		}
+
 	}
 
 	vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());
@@ -163,6 +128,6 @@ int main(int argc, char *argv[])
 
 void dino_think(Entity *self)
 {
-	gfc_matrix_rotate(self->modelMatrix, self->modelMatrix, 0.002, vector3d(0, 0, 1));
+	//gfc_matrix_rotate(self->modelMatrix, self->modelMatrix, 0.002, vector3d(0, 0, 1));
 }
 /*eol@eof*/
