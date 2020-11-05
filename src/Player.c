@@ -1,9 +1,16 @@
 #include "Player.h"
 #include "simple_logger.h"
+#include "gfc_vector.h"
+#include "gfc_matrix.h"
+#include "Projectile.h"
 
 void player_think(Entity *self);
 
 Entity *player;
+int fired = 0;
+int canCast = 0;
+int lastCast = 0; 
+
 
 Entity *player_spawn(Vector3D position, const char *modelName)
 {
@@ -12,6 +19,9 @@ Entity *player_spawn(Vector3D position, const char *modelName)
 	player->health = 100;
 	player->mana = 100;
 	player->position = position;
+	player->experience = 0;
+	player->invincible = 0;
+	//gfc_matrix_identity(player->modelMatrix);
 
 	if (!player)
 	{
@@ -22,6 +32,7 @@ Entity *player_spawn(Vector3D position, const char *modelName)
 	player->model = gf3d_model_load(modelName);
 	vector3d_copy(player->position, position);
 	player->think = player_think;
+	player->movespeed = 0.01;
 	return player;
 }
 
@@ -29,53 +40,103 @@ void player_think(Entity *self)
 {
 	const Uint8 *keys;
 	keys = SDL_GetKeyboardState(NULL);
+	Uint32 CD = SDL_GetTicks();
+
+
+
+
 
 	if (keys[SDL_SCANCODE_W])
 	{
-		self->velocity.y -= 0.01;
-		gfc_matrix_make_translation(self->modelMatrix, self->velocity);
-		slog("%i", player->health);
+		if (fired < 1)
+		{
+			fired += 1; 
+			Entity *bullet = create_projectile(player);
+			slog("Bullet made");
+		}
+		self->position.y -= player->movespeed;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		//slog("%i", player->health);
 	}
 	if (keys[SDL_SCANCODE_S])
-	{
-		self->velocity.y += 0.01;
-		gfc_matrix_make_translation(self->modelMatrix, self->velocity);
+	{	
+		if (fired < 2)
+		{
+			fired += 1;
+			Entity *bullet = create_projectile(player);
+			slog("Bullet made");
+		}
+		self->position.y += player->movespeed;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
 	}
 	if (keys[SDL_SCANCODE_A])
 	{
-		self->velocity.x += 0.01;
-		gfc_matrix_make_translation(self->modelMatrix, self->velocity);
+		self->position.x += player->movespeed;
+		//gfc_matrix_rotate(player->modelMatrix, player->modelMatrix, 0.2, vector3d(0, 1, 0));
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		
 	}
 	if (keys[SDL_SCANCODE_D])
 	{
-		self->velocity.x -= 0.01;
-		gfc_matrix_make_translation(self->modelMatrix, self->velocity);
+		self->position.x -= player->movespeed;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
 	}
-	if (keys[SDL_SCANCODE_E])
-	{
-		self->rotation.x += 0.01;
-		gfc_matrix_rotate(self->model, self->model, 0.125, vector3d(0, 0, 1));
-	}
-	if (keys[SDL_SCANCODE_Q])
-	{
-		self->rotation.y -= 0.01;
-		gfc_matrix_make_translation(self->modelMatrix, self->rotation);
-	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 	if (keys[SDL_SCANCODE_1])
 	{
-		if (player->mana > 10)
+
+
+		if ((CD - lastCast > 1000))
+		{
+			canCast = 1;
+		}
+		else{
+			canCast = 0;
+		}
+
+
+		if (player->mana > 10 && canCast == 1)
 		{
 			//Cast spell
-			player->mana -= 10;
-			slog("%i", player->mana);
+			//player->mana -= 10;
+			lastCast = SDL_GetTicks();
+			slog("I casted");
+		}
+		else{
+			slog("Spell on cooldown!");
 		}
 	}
+
+
+
+
+
+
+
+
+
+
 	if (keys[SDL_SCANCODE_2])
 	{
-		if (player->mana > 15)
+
+		if (player->mana > 15 && canCast == 1)
 		{
 			//Cast spell
-			player->mana -= 15;
+
+			//player->mana -= 15;
+			//slog("%i", timeout);
 		}
 	}
 	if (keys[SDL_SCANCODE_3])
@@ -84,29 +145,40 @@ void player_think(Entity *self)
 		{
 			//Cast spell
 			player->mana -= 20;
+			slog("%i", player->mana);
 		}
 	}
 	if (keys[SDL_SCANCODE_4])
 	{
 		if (player->mana > 20)
 		{
-			//Cast spell
+			//Grant Haste makes fast
 			player->mana -= 20;
+			player->movespeed += 0.005;
+			slog("%i", player->mana);
 		}
 	}
 	if (keys[SDL_SCANCODE_5])
 	{
 		if (player->mana > 50)
 		{
-			//Cast spell
+			//Cast full heal
 			player->mana -= 50;
+			player->health = 100;
+			slog("%i", player->mana);
 		}
 	}
+
+	if (player->invincible == 1)
+	{
+		player->health = 100;
+	}
+	
 }
 
 void player_delete(Entity *self)
 {
-	PlayerData *pd;
+//	PlayerData *pd;
 	if (!self)return;
 	
 }

@@ -111,12 +111,13 @@ void gf3d_vgraphics_init(
 		vector3d(0, 0, 0),
 		vector3d(0, 0, 1)
 		);
+	//THIS SETS DEPTH OF CAMERA
 	gfc_matrix_perspective(
 		gf3d_vgraphics.ubo.proj,
 		45 * GFC_DEGTORAD,
 		renderWidth / (float)renderHeight,
 		0.1f,
-		100
+		700
 		);
 
 	gf3d_vgraphics.ubo.proj[1][1] *= -1;
@@ -665,6 +666,20 @@ void gf3d_vgraphics_rotate_camera(float degrees)
 		degrees,
 		vector3d(0, 0, 1));
 
+}
+
+void gf3d_vgraphics_thirdperson_camera(Vector3D position)
+{
+	Vector3D third = position;
+	third.y += 40;
+	third.z += 15;
+
+	gfc_matrix_view(
+		gf3d_vgraphics.ubo.view,
+		third,
+		position,
+		vector3d(0, 0, 1)
+		);
 }
 
 Pipeline *gf3d_vgraphics_get_graphics_pipeline()

@@ -474,7 +474,7 @@ void gf3d_pipeline_create_descriptor_sets(Pipeline *pipe)
             free(layouts);
             return;
         }
-    }
+    }//Looky
     pipe->descriptorSetCount = gf3d_pipeline.chainLength;
 }
 

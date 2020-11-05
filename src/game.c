@@ -11,6 +11,7 @@
 #include "gf3d_camera.h"
 #include "gf3d_texture.h"
 #include "gf3d_entity.h"
+#include "A_Slime.h"
 #include "Player.h"
 
 void dino_think(Entity *self);
@@ -19,7 +20,10 @@ int main(int argc, char *argv[])
 {
 	//When programming in C all variables must be declared at the top.
 	int done = 0;
-	int a, i;
+	int a;
+	int mouseX, mouseY;
+	int mouseX2 = 0;
+	int mouseXy = 0;
 	Uint8 validate = 0;
 	const Uint8 * keys;
 	Uint32 bufferFrame = 0;
@@ -60,6 +64,9 @@ int main(int argc, char *argv[])
 	slog_sync();
 
 	Entity *player = player_spawn(vector3d(0, 0, 0), "dino");
+	//Entity *slime1 = a_slime_spawn();
+	gf3d_vgraphics_thirdperson_camera(player->position);
+
 	
 	/*for (i = 0; i < 1; i++)
 	{
@@ -89,13 +96,13 @@ int main(int argc, char *argv[])
 		
 
 		gf3d_entity_think_all();
+		
 
-
-		/*gfc_matrix_rotate(
-			modelMat2,
-			modelMat2,
-			0.002,
-			vector3d(0, 0, 1));*/
+		//gfc_matrix_rotate(
+		//	modelMat2,
+		//	modelMat2,
+		//	0.002,
+		//	vector3d(0, 0, 1));
 
 		// configure render command for graphics command pool
 		// for each mesh, get a command and configure it from the pool
@@ -112,10 +119,18 @@ int main(int argc, char *argv[])
 
 		gf3d_vgraphics_render_end(bufferFrame);
 
+		/*SDL_GetMouseState(mouseX, mouseY);
+		SDL_GetMouseState(mouseX2, mouseY2);
+		if ()
+		{
+			gf3d_vgraphics_rotate_camera(3.14);
+		}
+	
+*/
 		if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
 
 		//Begin code for assigning movement to the models
-
+		
 	}
 
 	vkDeviceWaitIdle(gf3d_vgraphics_get_default_logical_device());

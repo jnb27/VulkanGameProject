@@ -11,6 +11,13 @@
 * @purpose this is the file to acces the entity management system
 */
 
+enum State
+{
+	PASSIVE,
+	AGGRO,
+	SEARCHING,
+
+};
 
 typedef struct Entity_S
 {
@@ -18,18 +25,26 @@ typedef struct Entity_S
 	Model			*model;
 	Matrix4			modelMatrix;
 	Vector3D		position; 
-	Vector3D		velocity;
-	Vector3D		scale;
-	Vector3D		rotation;
+	//Vector3D		velocity;
+	//Vector3D		scale;
+	//Vector3D		rotation;
 	int				health;
 	int				mana;
 	int				experience;
+	int				invincible; 
+	int				STATE;
+	float			movespeed; 
 
 	//ItemData		*itemdata; // NULL if not Item
 	//MonsterData	*monsterdata; // NULL if not a monster
 	//ClientData	*clientdata;  // NULL if not a player
+	void			*data; // Points to custom data per mob type
+	struct Entity_S			*owner;
 
-	void(*think)(struct Entity_S *self);
+	void			(*damage)(struct Entity_S *self, int damage, struct Entity_S *inflictor);
+	void			(*think)(struct Entity_S *self);
+	void			(*die)(struct Entity_S *self);
+
 } Entity;
 
 /**

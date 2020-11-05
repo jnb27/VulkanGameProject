@@ -12,20 +12,18 @@
 @purpose this file is to start making a basic enemy 
 */
 
-typedef struct Slime_S
-{
-	Uint8 _inuse; //Check to make sure it's not rewritten
-	Model *model;
-	Matrix4 modelMatrix;
-	int Health;
-	void(*think)(struct Slime_S *self);
-} Slime;
+
+	
+
 
 /*
 *@brief a void to initialize basic variables of any slime, hp, model and etc
 *@param a pointer to itself
 */
-void a_slime_init(Slime *self);
+Entity *a_slime_spawn();
+
+
+void slime_think(Entity *self);
 
 
 #endif
