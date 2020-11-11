@@ -25,7 +25,7 @@ Entity *DinoGSpawn()
 	DinoG->model = gf3d_model_load("DinoG");
 	DinoG->health = 50;
 	DinoG->experience = 5;
-	DinoG->movespeed = 0.001;
+	DinoG->movespeed = 0.015;
 	DinoG->STATE = PASSIVE;
 	DinoG->radius = 5.0;
 	DinoG->EntityType = Mob4;

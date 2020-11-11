@@ -163,17 +163,17 @@ void player_think()
 */
 
 
-	if (keys[SDL_SCANCODE_P])
-	{
-		if (SDL_GetTicks() == 0 || SDL_GetTicks() % 1000 == 0)
-		{
-			slog("%f", player->position.x);
-			slog("%f", player->position.y);
-			slog("%f", player->position.z);
-			create_projectile2(player);
-		}
+	//if (keys[SDL_SCANCODE_P])
+	//{
+	//	if (SDL_GetTicks() == 0 || SDL_GetTicks() % 1000 == 0)
+	//	{
+	//		slog("%f", player->position.x);
+	//		slog("%f", player->position.y);
+	//		slog("%f", player->position.z);
+	//		create_projectile2(player);
+	//	}
 
-	}
+	//}
 
 
 	if (keys[SDL_SCANCODE_1])

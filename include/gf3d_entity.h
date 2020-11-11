@@ -20,9 +20,18 @@ enum EntityType
 	Mob5,
 	Projectile,
 	Projectile2,
-	Projectile3
+	Projectile3,
+	Pickup
 };
 
+enum ItemType
+{
+	Health,
+	Invincible,
+	SpeedBoost,
+	Mana,
+	Spell
+};
 enum State
 {
 	PASSIVE,
@@ -61,6 +70,7 @@ typedef struct Entity_S
 	float			movespeed; 
 	float			radius;
 	int				EntityType;
+	int				ItemType;
 	float			range;
 
 

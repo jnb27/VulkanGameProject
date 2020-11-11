@@ -25,11 +25,11 @@ Entity *DinoRSpawn()
 	DinoR->model = gf3d_model_load("DinoR");
 	DinoR->health = 50;
 	DinoR->experience = 5;
-	DinoR->movespeed = 0.001;
+	DinoR->movespeed = 0.01;
 	DinoR->STATE = PASSIVE;
 	DinoR->radius = 5.0;
 	DinoR->EntityType = Mob5;
-	DinoR->range = 125;
+	DinoR->range = 300;
 	DinoR->target = 0;
 	DinoR->DIRECTION = Back;
 	DinoR->position = vector3d(-60, 60, 0);
@@ -46,9 +46,7 @@ void DinoR_think()
 {
 	if (!DinoR)return;
 
-
-
-	if (DinoR->target != 0)
+	if (DinoR->target != 0 /*&& DinoR->target->EntityType == Pickup*/)
 	{
 		gf3d_entity_follow(DinoR->target, DinoR);
 	}

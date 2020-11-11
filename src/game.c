@@ -59,10 +59,16 @@ int main(int argc, char *argv[])
 	slog_sync();
 
 	Entity *player = player_spawn(vector3d(0, 0, 0), "dino");
-	//Entity *slime1 = a_slime_spawn();
-	//Entity *DinoW = DinoWSpawn();
-	Entity *DinoP = DinoPSpawn();
-	Entity *DinoG = DinoGSpawn();
+	
+	
+	
+	
+	
+	Entity *Item = ItemDropHP();
+	Entity *Item2 = ItemDropIN();
+	Entity *Item3 = ItemDropSPD();
+	Entity *Item4 = ItemDropMana();
+	Entity *Item5 = ItemDropSpell();
 
 
 
@@ -115,6 +121,42 @@ int main(int argc, char *argv[])
 		if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
 
 		//Begin code for assigning movement to the models
+
+		if (keys[SDL_SCANCODE_Y])
+		{
+			if (SDL_GetTicks() % 3000 == 0)
+			{
+				Entity *DinoW = DinoWSpawn();
+			}
+		}
+		if (keys[SDL_SCANCODE_U])
+		{
+			if (SDL_GetTicks() % 3000 == 0)
+			{
+				Entity *DinoP = DinoPSpawn();
+			}
+		}
+		if (keys[SDL_SCANCODE_I])
+		{
+			if (SDL_GetTicks() % 3000 == 0)
+			{
+				Entity *DinoG = DinoGSpawn();
+			}
+		}
+		if (keys[SDL_SCANCODE_O])
+		{
+			if (SDL_GetTicks() % 3000 == 0)
+			{
+				Entity *DinoR = DinoRSpawn();
+			}
+		}
+		if (keys[SDL_SCANCODE_P])
+		{
+			if (SDL_GetTicks() % 3000 == 0)
+			{
+				Entity *slime1 = a_slime_spawn();
+			}
+		}
 		
 	}
 

@@ -140,6 +140,53 @@ void gf3d_entity_think_all()
 					}
 				}
 
+				//Case For picking up
+				if (gf3d_entity.entity_list[i].EntityType == Player && gf3d_entity.entity_list[b].EntityType == Pickup)
+				{
+					if (SDL_GetTicks() % 100 == 0)
+					{
+						switch (gf3d_entity.entity_list[b].ItemType)
+						{
+						case Health:
+							gf3d_entity.entity_list[i].health += 10;
+							slog("Health obtained");
+							break;
+						case Invincible:
+							gf3d_entity.entity_list[b].invincible = 1;
+							slog("Invincible");
+							break;
+						case SpeedBoost: 
+							gf3d_entity.entity_list[b].movespeed += 0.005;
+							slog("Speed");
+							break;
+						case Mana:
+							gf3d_entity.entity_list[b].mana += 50;
+							slog("Mana");
+							break;
+						case Spell:
+							gf3d_entity.entity_list[b].radius = 10; 
+							slog("Big boy");
+							break;
+						}
+						slog("Yummy item");
+						
+						//gf3d_entity.entity_list[i].target = 0;
+						gf3d_entity_free(&gf3d_entity.entity_list[b]);
+					}
+				}
+
+				//Case For DinoR stealing pickups
+				if (gf3d_entity.entity_list[i].EntityType == Mob5 && gf3d_entity.entity_list[b].EntityType == Pickup)
+				{
+					if (SDL_GetTicks() % 1000 == 0)
+					{
+						slog("Yummy item");
+						gf3d_entity.entity_list[i].health += 10;
+						gf3d_entity.entity_list[i].target = 0;
+						gf3d_entity_free(&gf3d_entity.entity_list[b]);
+					}
+				}
+
 				//Case For Player being damaged by DinoW
 				if (gf3d_entity.entity_list[i].EntityType == Mob2 && gf3d_entity.entity_list[b].EntityType == Player)
 				{
@@ -204,6 +251,10 @@ void gf3d_entity_think_all()
 				//slog("Found player");
 			}
 			if (checkEnemies2(&gf3d_entity.entity_list[b], &gf3d_entity.entity_list[i]) == 1)
+			{
+				//slog("Found player");
+			}
+			if (checkPickup(&gf3d_entity.entity_list[b], &gf3d_entity.entity_list[i]) == 1)
 			{
 				//slog("Found player");
 			}
@@ -301,41 +352,66 @@ int checkEnemies2(Entity *self, Entity *other)
 	return 0;
 }
 
+int checkPickup(Entity *self, Entity *other)
+{
+	if (self->EntityType != Mob5)return 0;
+	if (other->EntityType != Pickup)return 0;
+	if (self->target != 0)return 0;
+	int EnemyFound = 0;
+	float distance_x = self->position.x - other->position.x;
+	float distance_y = self->position.y - other->position.y;
+	float distance_z = self->position.z - other->position.z;
+
+	if (self->radius == 0 || other->radius == 0) return 0;
+	//slog("%f, %f", self->radius, other->radius);
+
+	float rangesum = self->range + other->radius;
+
+	//slog("Check collision");
+	if ((distance_x * distance_x) + (distance_y * distance_y) + (distance_z * distance_z) <= (rangesum * rangesum) && other->EntityType == Pickup)
+	{
+		//ENEMY CHASER
+		slog("Pickup found");
+		self->target = other;
+		return 1;
+	}
+
+	return 0;
+}
+
 void gf3d_entity_follow(Entity *target, Entity *self)
 {
 	//Vector3D Destination = target->position;
-
-	if (self->position.x >= target->position.x)
-	{
-		self->position.x -= self->movespeed;
-		self->DIRECTION = Left; 
-		gfc_matrix_make_translation(self->modelMatrix, self->position);
-		
-	}
-
-	if (self->position.x <= target->position.x)
-	{
-		self->DIRECTION = Right; 
-		self->position.x += self->movespeed;
-		gfc_matrix_make_translation(self->modelMatrix, self->position);
-		
-	}
-
-	if (self->position.y >= target->position.y)
+	if (self->position.y >= target->position.y && self->position.y >= -100)
 	{
 		self->DIRECTION = Forward; 
 		self->position.y -= self->movespeed;
 		gfc_matrix_make_translation(self->modelMatrix, self->position);
 		
 	}
-
-	if (self->position.y <= target->position.y)
+	if (self->position.y <= target->position.y && self->position.y <= 100)
 	{
 		self->DIRECTION = Back;
 		self->position.y += self->movespeed;
 		gfc_matrix_make_translation(self->modelMatrix, self->position);
 		
 	}
+	if (self->position.x >= target->position.x && self->position.x <= 100)
+	{
+		self->position.x -= self->movespeed;
+		self->DIRECTION = Right; 
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		
+	}
+	if (self->position.x <= target->position.x && self->position.x >= -100)
+	{
+		self->DIRECTION = Left; 
+		self->position.x += self->movespeed;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		
+	}
+
+
 
 	
 	/*if (self->position.y < target->position.y && self->position.x > target->position.x)
