@@ -16,22 +16,17 @@
 
 void dino_think(Entity *self);
 
+//WORLD SIZE 102 X 102 
+
 int main(int argc, char *argv[])
 {
 	//When programming in C all variables must be declared at the top.
 	int done = 0;
 	int a;
-	int mouseX, mouseY;
-	int mouseX2 = 0;
-	int mouseXy = 0;
 	Uint8 validate = 0;
 	const Uint8 * keys;
 	Uint32 bufferFrame = 0;
 	VkCommandBuffer commandBuffer;
-	//Model *model;
-	//Matrix4 modelMat;
-	//Model *model2;
-	//Matrix4 modelMat2;
 	Entity *ent[6] = { 0 };
 
 	//Disables all Validation Layers at the start
@@ -65,26 +60,23 @@ int main(int argc, char *argv[])
 
 	Entity *player = player_spawn(vector3d(0, 0, 0), "dino");
 	//Entity *slime1 = a_slime_spawn();
+	//Entity *DinoW = DinoWSpawn();
+	Entity *DinoP = DinoPSpawn();
+	Entity *DinoG = DinoGSpawn();
+
+
+
+
+
+	Entity *world = gf3d_entity_new();
+	world->model = gf3d_model_load("Terrain");
+	world->position.z -= 10;
+	world->radius = 0;
+	gfc_matrix_make_translation(world->modelMatrix, world->position);
+
 	gf3d_vgraphics_thirdperson_camera(player->position);
 
 	
-	/*for (i = 0; i < 1; i++)
-	{
-		ent[i] = gf3d_entity_new();
-		if (!ent[i])continue;
-		ent[i]->model = gf3d_model_load("dino");
-		ent[i]->think = dino_think;
-	}*/
-
-	/*Loading 2 Dino Models to start doing stuff
-	model = gf3d_model_load("dino");
-	gfc_matrix_identity(modelMat);
-	model2 = gf3d_model_load("dino");
-	gfc_matrix_identity(modelMat2);
-	/*gfc_matrix_make_translation(
-		modelMat2,
-		vector3d(10, 0, 0)
-		);*/
 	while (!done)
 	{
 		SDL_PumpEvents();   // update SDL's internal event structures
@@ -94,9 +86,9 @@ int main(int argc, char *argv[])
 		//gf3d_vgraphics_rotate_camera(0.001);
 
 		
-
-		gf3d_entity_think_all();
 		
+		gf3d_entity_think_all();
+		//gf3d_entity_follow(player, slime1);
 
 		//gfc_matrix_rotate(
 		//	modelMat2,
@@ -119,14 +111,7 @@ int main(int argc, char *argv[])
 
 		gf3d_vgraphics_render_end(bufferFrame);
 
-		/*SDL_GetMouseState(mouseX, mouseY);
-		SDL_GetMouseState(mouseX2, mouseY2);
-		if ()
-		{
-			gf3d_vgraphics_rotate_camera(3.14);
-		}
 	
-*/
 		if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
 
 		//Begin code for assigning movement to the models

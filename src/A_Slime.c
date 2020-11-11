@@ -21,11 +21,18 @@ Entity *a_slime_spawn()
 		return NULL;
 	}
 
-	Slime->model = gf3d_model_load("dino");
+	Slime->model = gf3d_model_load("DinoB");
 	Slime->health = 30;
 	Slime->experience = 5;
-	Slime->think = slime_think;
+	Slime->movespeed = 0.0075;
 	Slime->STATE = PASSIVE;
+	Slime->radius = 5.0;
+	Slime->EntityType = Mob1;
+	Slime->range = 20;
+	Slime->target = 0;
+	Slime->position = vector3d(20, 20, 0);
+	Slime->think = slime_think;
+	gfc_matrix_make_translation(Slime->modelMatrix, Slime->position);
 
 	slog("Slime was spawned");
 
@@ -33,20 +40,33 @@ Entity *a_slime_spawn()
 
 }
 
-void slime_think(Entity *self)
+void slime_think()
 {
-
+	if (!Slime)return;
 	if (Slime->STATE == PASSIVE)
 	{
-		//slog("I am currently passive");
+		if (Slime->target != 0)
+		{
+			//slog("I have something");
+			Slime->STATE = AGGRO;
+		}
 	}
 	if (Slime->STATE == AGGRO)
 	{
 		//Fight the thing
+		gf3d_entity_follow(Slime->target, Slime);
+
+		if (SDL_GetTicks() == 0 || SDL_GetTicks() % 500 == 0)
+		{
+			//fire projectile 
+			slog("%d", SDL_GetTicks());
+			create_projectile(Slime);
+		}
 	}
-	if (Slime->STATE == SEARCHING)
+	
+	if (Slime->health <= 0)
 	{
-		//Look for thing
+		gf3d_entity_free(Slime);
 	}
 	
 }

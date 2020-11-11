@@ -10,6 +10,18 @@
 /**
 * @purpose this is the file to acces the entity management system
 */
+enum EntityType
+{
+	Player,
+	Mob1,
+	Mob2,
+	Mob3,
+	Mob4,
+	Mob5,
+	Projectile,
+	Projectile2,
+	Projectile3
+};
 
 enum State
 {
@@ -17,6 +29,17 @@ enum State
 	AGGRO,
 	SEARCHING,
 
+};
+
+enum DIRECTION{
+	Forward,
+	ForwardLeft,
+	ForwardRight,
+	Left,
+	BackLeft,
+	Back,
+	BackRight,
+	Right
 };
 
 typedef struct Entity_S
@@ -33,13 +56,20 @@ typedef struct Entity_S
 	int				experience;
 	int				invincible; 
 	int				STATE;
+	int				DIRECTION;
+	int				lifespan; 
 	float			movespeed; 
+	float			radius;
+	int				EntityType;
+	float			range;
+
 
 	//ItemData		*itemdata; // NULL if not Item
 	//MonsterData	*monsterdata; // NULL if not a monster
 	//ClientData	*clientdata;  // NULL if not a player
 	void			*data; // Points to custom data per mob type
-	struct Entity_S			*owner;
+	struct Entity_S	*owner;
+	struct Entity_S	*target;
 
 	void			(*damage)(struct Entity_S *self, int damage, struct Entity_S *inflictor);
 	void			(*think)(struct Entity_S *self);
@@ -84,6 +114,8 @@ void gf3d_entity_free(Entity *entity);
 void gf3d_entity_think_all();
 
 void gf3d_entity_close(); 
+
+void gf3d_entity_follow(Entity *target, Entity *self);
 
 #endif
 
