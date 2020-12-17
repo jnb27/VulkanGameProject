@@ -10,9 +10,9 @@ State 4: If I am near the player hit the player
 State 5: Dead?
 */
 
-Entity *DinoG;
 
-Entity *DinoGSpawn()
+
+Entity *DinoGSpawn(Entity *DinoG)
 {
 	DinoG = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
@@ -32,7 +32,7 @@ Entity *DinoGSpawn()
 	DinoG->range = 100;
 	DinoG->target = 0;
 	DinoG->DIRECTION = Back;
-	DinoG->position = vector3d(-60, -60, 0);
+	DinoG->position = vector3d((rand() % 102) * -1, rand() % 102, 0);
 	DinoG->think = DinoG_think;
 	gfc_matrix_make_translation(DinoG->modelMatrix, DinoG->position);
 
@@ -42,7 +42,7 @@ Entity *DinoGSpawn()
 
 }
 
-void DinoG_think()
+void DinoG_think(Entity *DinoG)
 {
 	if (!DinoG)return;
 

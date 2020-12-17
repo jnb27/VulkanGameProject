@@ -1,5 +1,6 @@
 #include "gf3d_entity.h"
 #include "A_Slime.h"
+#include "Projectile.h"
 /*
 	Let's Program some states ! 
 	State 1: Passive - Do nothing maybe just walk left and right for fun
@@ -9,9 +10,9 @@
 	State 5: Dead?
 */
 
-Entity *Slime; 
+Entity *ent[10] = { 0 };
 
-Entity *a_slime_spawn()
+Entity *a_slime_spawn(Entity *Slime)
 {
 	Slime = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
@@ -30,7 +31,7 @@ Entity *a_slime_spawn()
 	Slime->EntityType = Mob1;
 	Slime->range = 20;
 	Slime->target = 0;
-	Slime->position = vector3d(20, 20, 0);
+	Slime->position = vector3d((rand() % 102) * -1, rand() % 102, 0);
 	Slime->think = slime_think;
 	gfc_matrix_make_translation(Slime->modelMatrix, Slime->position);
 
@@ -40,7 +41,7 @@ Entity *a_slime_spawn()
 
 }
 
-void slime_think()
+void slime_think(Entity *Slime)
 {
 	if (!Slime)return;
 	if (Slime->STATE == PASSIVE)
@@ -60,7 +61,7 @@ void slime_think()
 		{
 			//fire projectile 
 			slog("%d", SDL_GetTicks());
-			create_projectile(Slime);
+			create_projectile(Slime, ent[0]);
 		}
 	}
 	

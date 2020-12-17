@@ -1,11 +1,11 @@
 #include "Projectile.h"
 #include "simple_logger.h"
 
-Entity *proj; 
+//Entity *proj; 
 
 void projectile_think(Entity *self);
 
-Entity *create_projectile(Entity *owner)
+Entity *create_projectile(Entity *owner, Entity *proj)
 {
 	//When I create an projectile it needs to go in a certain direction, then disappear after a while.
 	//I need to know who owns the projectile
@@ -22,14 +22,13 @@ Entity *create_projectile(Entity *owner)
 	proj->DIRECTION = owner->DIRECTION;
 	
 	//I have an owner and I have a model, now I need to fire in a direction with a speed
-
+	return proj;
 
 }
 
-Entity *create_projectile2(Entity *owner)
+Entity *create_projectile2(Entity *owner, Entity *proj)
 {
-	//When I create an projectile it needs to go in a certain direction, then disappear after a while.
-	//I need to know who owns the projectile
+	// This is the slow
 	proj = gf3d_entity_new();
 	proj->owner = owner;
 	proj->model = gf3d_model_load("Sphere2");
@@ -43,14 +42,13 @@ Entity *create_projectile2(Entity *owner)
 	proj->DIRECTION = owner->DIRECTION;
 
 	//I have an owner and I have a model, now I need to fire in a direction with a speed
-
+	return proj;
 
 }
 
-Entity *create_projectile3(Entity *owner)
+Entity *create_projectile3(Entity *owner, Entity *proj)
 {
-	//When I create an projectile it needs to go in a certain direction, then disappear after a while.
-	//I need to know who owns the projectile
+	//This is the oneshot
 	proj = gf3d_entity_new();
 	proj->owner = owner;
 	proj->model = gf3d_model_load("Sphere2");
@@ -58,13 +56,13 @@ Entity *create_projectile3(Entity *owner)
 	proj->position.x = owner->position.x;
 	proj->position.y = owner->position.y;
 	proj->position.z = owner->position.z;
-	proj->movespeed = 0.085;
+	proj->movespeed = 0.095; //was .085
 	proj->EntityType = Projectile3;
 	proj->think = projectile_think;
 	proj->DIRECTION = owner->DIRECTION;
 
 	//I have an owner and I have a model, now I need to fire in a direction with a speed
-
+	return proj;
 
 }
 
@@ -83,32 +81,32 @@ void projectile_think(Entity *self)
 	switch (self->DIRECTION)
 	{
 		case Forward:
-			self->position.y -= proj->movespeed;
+			self->position.y -= self->movespeed;
 			break;
 		case ForwardLeft:
-			self->position.y -= proj->movespeed;
-			self->position.x += proj->movespeed;
+			self->position.y -= self->movespeed;
+			self->position.x += self->movespeed;
 			break;
 		case ForwardRight:
-			self->position.y -= proj->movespeed;
-			self->position.x -= proj->movespeed;
+			self->position.y -= self->movespeed;
+			self->position.x -= self->movespeed;
 			break;
 		case Left: 
-			self->position.x += proj->movespeed;
+			self->position.x += self->movespeed;
 			break;
 		case BackLeft:
-			self->position.y += proj->movespeed;
-			self->position.x += proj->movespeed;
+			self->position.y += self->movespeed;
+			self->position.x += self->movespeed;
 			break;
 		case Back:
-			self->position.y += proj->movespeed;
+			self->position.y += self->movespeed;
 			break;
 		case BackRight: 
-			self->position.y += proj->movespeed;
-			self->position.x -= proj->movespeed;
+			self->position.y += self->movespeed;
+			self->position.x -= self->movespeed;
 			break;
 		case Right:
-			self->position.x -= proj->movespeed;
+			self->position.x -= self->movespeed;
 			break;
 
 	}

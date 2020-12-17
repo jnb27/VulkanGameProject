@@ -16,6 +16,7 @@ int fired = 0;
 int canCast = 0;
 int lastCast[5] = { 0 };
 Uint32 CD;
+Entity *shots[11] = { 0 };
 
 const Uint8 *keys;
 
@@ -41,6 +42,7 @@ Entity *player_spawn(Vector3D position, const char *modelName)
 		return NULL;
 	}
 
+	//Probably make model load change based on player 
 	player->model = gf3d_model_load(modelName);
 	vector3d_copy(player->position, position);
 	player->think = player_think;
@@ -178,13 +180,13 @@ void player_think()
 
 	if (keys[SDL_SCANCODE_1])
 	{
-		CooldownCheck(1000, 0);
+		CooldownCheck(500, 0);
 		if (player->mana > 5 && canCast == 1)
 		{
 			//fire projectile 
 			slog("%d", SDL_GetTicks());
-			create_projectile(player);
-			canCast == 0;
+			create_projectile(player, shots[0]);
+			canCast = 0;
 			slog("I casted");
 		}
 	}
@@ -196,12 +198,12 @@ void player_think()
 		if (player->mana > 15 && canCast == 1 )
 		{
 				//fire projectile 
-				create_projectile2(player);
+				create_projectile2(player, shots[1]);
 				player->mana -= 15;	
 
 				slog("ATTACK 2");
 				slog("%d", player->mana);	
-				canCast == 0;
+				canCast = 0;
 		}
 		else{
 			slog("Spell on cooldown!");
@@ -211,12 +213,12 @@ void player_think()
 
 	if (keys[SDL_SCANCODE_3])
 	{
-		CooldownCheck(5000, 2);
+		CooldownCheck(1000, 2);
 		if (player->mana > 50 && canCast == 1)
 		{
-			player->mana -= 20;
-			create_projectile3(player);
-			canCast == 0;
+			//player->mana -= 20;
+			create_projectile3(player, shots[2]);
+			canCast = 0;
 			slog("SOMETHING");
 
 		}
@@ -236,7 +238,7 @@ void player_think()
 				player->movespeed *= 1.5;
 
 				slog("HASTE");
-				canCast == 0;
+				canCast = 0;
 		}
 		else{
 			slog("Spell on cooldown!");
@@ -254,7 +256,7 @@ void player_think()
 				player->health = 100;
 
 				slog("HEAL");
-				canCast == 0;
+				canCast = 0;
 				slog("%i", player->health);
 
 		}

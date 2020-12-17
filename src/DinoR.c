@@ -10,9 +10,9 @@ State 4: If I am near the player hit the player
 State 5: Dead?
 */
 
-Entity *DinoR;
+//Entity *DinoR;
 
-Entity *DinoRSpawn()
+Entity *DinoRSpawn(Entity *DinoR)
 {
 	DinoR = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
@@ -32,17 +32,25 @@ Entity *DinoRSpawn()
 	DinoR->range = 300;
 	DinoR->target = 0;
 	DinoR->DIRECTION = Back;
-	DinoR->position = vector3d(-60, 60, 0);
+	DinoR->position = vector3d( (rand() % 102) * -1, rand() % 102 , 0);
 	DinoR->think = DinoR_think;
 	gfc_matrix_make_translation(DinoR->modelMatrix, DinoR->position);
 
 	slog("DinoR was spawned");
 
+	//switch (worldLevel)
+	//{
+	//case 1: 
+	//	break;
+	//case 2: 
+
+	//}
+
 	return DinoR;
 
 }
 
-void DinoR_think()
+void DinoR_think(Entity *DinoR)
 {
 	if (!DinoR)return;
 
