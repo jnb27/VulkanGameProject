@@ -14,6 +14,16 @@
 //Increase Speed
 //Invincible
 
-Entity *ItemDrop();
+void ItemThink();
+
+Entity *ItemDropSpell();
+
+Entity *ItemDropMana();
+
+Entity *ItemDropSPD();
+
+Entity *ItemDropIN();
+
+Entity *ItemDropHP();
 
 #endif // !__Item_H__

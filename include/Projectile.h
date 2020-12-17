@@ -18,7 +18,9 @@
 
 
 */
-Entity *create_projectile(Entity *owner);
+Entity *create_projectile(Entity *owner, Entity *self);
+Entity *create_projectile2(Entity *owner, Entity *self);
+Entity *create_projectile3(Entity *owner, Entity *self);
 
 void update();
 
