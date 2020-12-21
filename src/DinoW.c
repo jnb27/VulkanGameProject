@@ -12,8 +12,9 @@ State 5: Dead?
 
 //Entity *DinoW;
 
-Entity *DinoWSpawn(Entity *DinoW)
+Entity *DinoWSpawn(int level)
 {
+	Entity *DinoW;
 	DinoW = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
 	if (!DinoW)
@@ -22,9 +23,16 @@ Entity *DinoWSpawn(Entity *DinoW)
 		return NULL;
 	}
 
-	DinoW->model = gf3d_model_load("DinoW");
+	if (level >= 5)
+	{
+		DinoW->model = gf3d_model_load("DinoW2");
+	}
+	else{
+		DinoW->model = gf3d_model_load("DinoW");
+	}
+
 	DinoW->health = 150;
-	DinoW->experience = 5;
+	DinoW->experience = 10;
 	DinoW->movespeed = 0.0075;
 	DinoW->STATE = PASSIVE;
 	DinoW->radius = 5.0;
@@ -46,8 +54,6 @@ void DinoW_think(Entity *DinoW)
 {
 	if (!DinoW)return;
 
-
-
 	if (DinoW->target != 0)
 	{
 		gf3d_entity_follow(DinoW->target, DinoW);
@@ -56,7 +62,38 @@ void DinoW_think(Entity *DinoW)
 
 	if (DinoW->health <= 0)
 	{
+		if (DinoW->target->EntityType == Player)
+		{
+			DinoW->target->experience += DinoW->experience;
+			DinoW->target->Slayed += 1;
+			slog("Death by player");
+		}
+
 		gf3d_entity_free(DinoW);
 	}
+	
+	if (DinoW->position.x > 100 || DinoW->position.x < -100 || DinoW->position.y > 100 || DinoW->position.y < -100)
+			{
+				gf3d_entity_free(DinoW);
+			}
 
+	if (DinoW->isPoisoned)
+	{
+		if (SDL_GetTicks() % 1000 == 0)
+		{
+			DinoW->health -= 1;
+			DinoW->PoisonTaken++;
+			slog("%d", DinoW->health);
+			slog("Poison Tick");
+
+		}
+
+		if (DinoW->PoisonTaken == 15)
+		{
+			DinoW->isPoisoned = 0;
+			DinoW->PoisonTaken = 0;
+		}
+
+		
+	}
 }

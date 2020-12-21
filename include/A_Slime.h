@@ -17,7 +17,7 @@
 *@brief a void to initialize basic variables of any slime, hp, model and etc
 *@param a pointer to itself
 */
-Entity *a_slime_spawn();
+Entity *a_slime_spawn(int level);
 
 
 void slime_think();

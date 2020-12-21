@@ -1,4 +1,6 @@
-
+#include <stdlib.h>
+#include <string.h>
+#include "simple_logger.h"
 
 
 #include "gf3d_entity.h"
@@ -10,9 +12,15 @@ typedef struct
     Uint32 entity_count; /*Upper Limit for active entities*/
 }EntityManager;
 
+Uint32 frame = 0;
+
 static EntityManager gf3d_entity = {0};
 
 void gf3d_entity_free(Entity *entity);
+
+void Poisoned(Entity *Affected);
+
+void Blinded(Entity *Blindy);
 
 void gf3d_entity_close()
 {
@@ -50,7 +58,7 @@ void gf3d_entity_init(Uint32 maxEntities)
 void gf3d_entity_free(Entity *entity)
 {
 	if (!entity)return;
-	slog("Entity Freed");
+	//slog("Entity Freed");
 	gf3d_model_free(entity->model);
 	memset(entity, 0, sizeof(Entity));
 }
@@ -79,6 +87,50 @@ void gf3d_entity_think(Entity *self)
 
 }
 
+void KnockBack(Entity *self, Entity *push)
+{
+	switch (push->DIRECTION)
+	{
+	case Forward:
+		self->position.y += push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+	case ForwardLeft:
+		self->position.y += push->Pushback;
+		self->position.x -= push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+	case ForwardRight:
+		self->position.y += push->Pushback;
+		self->position.x += push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+	case Left:
+		self->position.x -= push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+	case BackLeft:
+		self->position.y -= push->Pushback;
+		self->position.x -= push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+	case Back:
+		self->position.y -= push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+	case BackRight:
+		self->position.y -= push->Pushback;
+		self->position.x += push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+	case Right:
+		self->position.x += push->Pushback;
+		gfc_matrix_make_translation(self->modelMatrix, self->position);
+		break;
+
+	}
+}
+
 //gfc_word_cpy, use TextWord for strings
 //Most work will be done here
 
@@ -105,7 +157,7 @@ void gf3d_entity_think_all()
 			{		
 				//slog("%d", gf3d_entity.entity_list[i].EntityType);
 				
-				if (&gf3d_entity.entity_list[b] == gf3d_entity.entity_list[i].owner)
+				if (&gf3d_entity.entity_list[b] == gf3d_entity.entity_list[i].owner || gf3d_entity.entity_list[i].EntityType == gf3d_entity.entity_list[b].EntityType)
 				{
 					//Works
 					//slog("Colliding with parent");
@@ -215,7 +267,7 @@ void gf3d_entity_think_all()
 					//Now take damage
 						gf3d_entity.entity_list[b].health -= 5;
 	
-					slog("%d", gf3d_entity.entity_list[b].health);
+					slog("%i", gf3d_entity.entity_list[b].EntityType);
 					gf3d_entity_free(&gf3d_entity.entity_list[i]);
 				}
 
@@ -241,9 +293,46 @@ void gf3d_entity_think_all()
 					gf3d_entity_free(&gf3d_entity.entity_list[i]);
 				}
 				
-				
+				//Knockback
+				if (gf3d_entity.entity_list[i].EntityType == Knockback)
+				{
+					//Works
+					slog("ALMIGHTY PUSH");
+					KnockBack(&gf3d_entity.entity_list[b], &gf3d_entity.entity_list[i]);
 
-			
+					gf3d_entity_free(&gf3d_entity.entity_list[i]);
+				}
+
+				//Poison Test Case
+				if (gf3d_entity.entity_list[i].EntityType == Poison)
+				{
+					//Works
+					slog("Drip drip");
+					Poisoned(&gf3d_entity.entity_list[b]);
+
+					gf3d_entity_free(&gf3d_entity.entity_list[i]);
+				}
+
+				//PoisonSlow Test Case
+				if (gf3d_entity.entity_list[i].EntityType == PoisonSlow)
+				{
+					//Works
+					slog("PoisonSlow");
+					Poisoned(&gf3d_entity.entity_list[b]);
+					gf3d_entity.entity_list[b].movespeed /= 2; 
+
+					gf3d_entity_free(&gf3d_entity.entity_list[i]);
+				}
+
+				//Blind Test Case
+				if (gf3d_entity.entity_list[i].EntityType == Blind)
+				{
+					//Works
+					slog("FLAHSBANG");
+					Blinded(&gf3d_entity.entity_list[b]);
+
+					gf3d_entity_free(&gf3d_entity.entity_list[i]);
+				}
 			}
 
 			if (checkEnemies(&gf3d_entity.entity_list[b], &gf3d_entity.entity_list[i]) == 1)
@@ -267,7 +356,7 @@ void gf3d_entity_draw(Entity *self, Uint32 bufferFrame, VkCommandBuffer commandB
 {
 	if (!self) return;
 
-	gf3d_model_draw(self->model, bufferFrame, commandBuffer, self->modelMatrix);
+	gf3d_model_draw(self->model, bufferFrame, commandBuffer, self->modelMatrix, (Uint32)frame);
 
 }
 
@@ -298,6 +387,22 @@ int checkCollision(Entity *self, Entity *other)
 
 
 
+	return 0;
+}
+
+int checkPointCircle(float PointX, float PointY, float CircleX, float CircleY, float radius)
+{
+	// get distance between the point and circle's center
+	// using the Pythagorean Theorem
+	float distanceX = PointX - CircleX;
+	float distanceY = PointY - CircleY;
+	float distance = sqrt((distanceX*distanceX) + (distanceY*distanceY));
+
+	// if the distance is less than the circle's
+	// radius the point is inside!
+	if (distance <= radius) {
+		return 1;
+	}
 	return 0;
 }
 
@@ -384,35 +489,44 @@ void gf3d_entity_follow(Entity *target, Entity *self)
 	//Vector3D Destination = target->position;
 	if (self->position.y >= target->position.y && self->position.y >= -100)
 	{
-		self->DIRECTION = Forward; 
+		self->DIRECTION = Forward;
 		self->position.y -= self->movespeed;
 		gfc_matrix_make_translation(self->modelMatrix, self->position);
-		
+
 	}
 	if (self->position.y <= target->position.y && self->position.y <= 100)
 	{
 		self->DIRECTION = Back;
 		self->position.y += self->movespeed;
 		gfc_matrix_make_translation(self->modelMatrix, self->position);
-		
+
 	}
 	if (self->position.x >= target->position.x && self->position.x <= 100)
 	{
 		self->position.x -= self->movespeed;
-		self->DIRECTION = Right; 
+		self->DIRECTION = Right;
 		gfc_matrix_make_translation(self->modelMatrix, self->position);
-		
+
 	}
 	if (self->position.x <= target->position.x && self->position.x >= -100)
 	{
-		self->DIRECTION = Left; 
+		self->DIRECTION = Left;
 		self->position.x += self->movespeed;
 		gfc_matrix_make_translation(self->modelMatrix, self->position);
-		
+
+	}
+}
+
+	void Poisoned(Entity *Affected)
+	{
+		Affected->isPoisoned = 1; 
+
 	}
 
-
-
+	void Blinded(Entity *Blindy)
+	{
+		Blindy->isBlinded = 1;
+	}
 	
 	/*if (self->position.y < target->position.y && self->position.x > target->position.x)
 	{
@@ -443,6 +557,6 @@ void gf3d_entity_follow(Entity *target, Entity *self)
 	}*/
 
 
-}
+
 
 /*eolf@eof*/

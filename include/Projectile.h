@@ -18,9 +18,13 @@
 
 
 */
-Entity *create_projectile(Entity *owner, Entity *self);
-Entity *create_projectile2(Entity *owner, Entity *self);
-Entity *create_projectile3(Entity *owner, Entity *self);
+Entity *create_projectile(Entity *owner);
+Entity *create_projectile2(Entity *owner);
+Entity *create_projectile3(Entity *owner);
+Entity *Projectile_Knockback(Entity *owner);
+Entity *TurretFire(Entity *owner, int Direction);
+Entity *TurretBlind(Entity *owner, int Direction);
+Entity *TurretPoison(Entity *owner, int Direction);
 
 void update();
 

@@ -21,7 +21,12 @@ enum EntityType
 	Projectile,
 	Projectile2,
 	Projectile3,
-	Pickup
+	Pickup,
+	Knockback,
+	Poison,
+	PoisonSlow,
+	Blind,
+	PlayerTurretDMG
 };
 
 enum ItemType
@@ -72,6 +77,13 @@ typedef struct Entity_S
 	int				EntityType;
 	int				ItemType;
 	float			range;
+	int				PlayerType;
+	int				Pushback;
+	int				isPoisoned; 
+	int				PoisonTaken; 
+	int				isBlinded;
+	int				BlindTime;
+	int				Slayed;
 
 
 	//ItemData		*itemdata; // NULL if not Item
@@ -126,6 +138,14 @@ void gf3d_entity_think_all();
 void gf3d_entity_close(); 
 
 void gf3d_entity_follow(Entity *target, Entity *self);
+
+int checkCollision(Entity *self, Entity *other);
+
+int checkEnemies(Entity *self, Entity *other);
+
+int checkEnemies2(Entity *self, Entity *other);
+
+int checkPickup(Entity *self, Entity *other);
 
 #endif
 

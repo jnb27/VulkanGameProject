@@ -228,6 +228,8 @@ Texture *gf3d_texture_load(char *filename)
         return NULL;
     }
     gfc_line_cpy(tex->filename,filename);
+	tex->width = surface->w;
+	tex->height = surface->h;
 
     imageSize = surface->w * surface->h * 4;
     

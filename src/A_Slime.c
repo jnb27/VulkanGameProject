@@ -10,10 +10,10 @@
 	State 5: Dead?
 */
 
-Entity *ent[10] = { 0 };
 
-Entity *a_slime_spawn(Entity *Slime)
+Entity *a_slime_spawn(int level)
 {
+	Entity *Slime;
 	Slime = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
 	if (!Slime)
@@ -21,10 +21,16 @@ Entity *a_slime_spawn(Entity *Slime)
 		slog("failed to spawn a new slime enttity");
 		return NULL;
 	}
-
-	Slime->model = gf3d_model_load("DinoB");
-	Slime->health = 30;
-	Slime->experience = 5;
+	if (level >= 3)
+	{
+		Slime->model = gf3d_model_load("DinoB2");
+	}
+	else{
+		Slime->model = gf3d_model_load("DinoB");
+	}
+	
+	Slime->health = 30*level;
+	Slime->experience = 20*level;
 	Slime->movespeed = 0.0075;
 	Slime->STATE = PASSIVE;
 	Slime->radius = 5.0;
@@ -52,6 +58,28 @@ void slime_think(Entity *Slime)
 			Slime->STATE = AGGRO;
 		}
 	}
+
+
+	if (Slime->isPoisoned)
+	{
+		if (SDL_GetTicks() % 1000 == 0)
+		{
+			Slime->health -= 1;
+			Slime->PoisonTaken++;
+			slog("%d", Slime->health);
+			slog("Poison Tick");
+
+		}
+
+		if (Slime->PoisonTaken == 15)
+		{
+			Slime->isPoisoned = 0;
+			Slime->PoisonTaken = 0;
+		}
+	}
+
+
+
 	if (Slime->STATE == AGGRO)
 	{
 		//Fight the thing
@@ -61,12 +89,19 @@ void slime_think(Entity *Slime)
 		{
 			//fire projectile 
 			slog("%d", SDL_GetTicks());
-			create_projectile(Slime, ent[0]);
+			create_projectile(Slime);
 		}
 	}
 	
 	if (Slime->health <= 0)
 	{
+
+		if (Slime->target->EntityType == Player)
+		{
+			Slime->target->experience += Slime->experience;
+			Slime->target->Slayed += 1;
+			slog("Death by player");
+		}
 		gf3d_entity_free(Slime);
 	}
 	

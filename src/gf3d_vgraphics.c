@@ -23,6 +23,7 @@
 #include "gf3d_pipeline.h"
 #include "gf3d_commands.h"
 #include "gf3d_texture.h"
+#include "gf3d_sprite.h"
 
 
 typedef struct
@@ -60,7 +61,8 @@ typedef struct
 	VkSemaphore                 imageAvailableSemaphore;
 	VkSemaphore                 renderFinishedSemaphore;
 
-	Pipeline                   *pipe;
+	Pipeline                   *model_pipe;
+	Pipeline					*overlay_pipe; // Render 2d
 
 	Command                 *   graphicsCommandPool;
 	UniformBufferObject         ubo;
@@ -133,19 +135,24 @@ void gf3d_vgraphics_init(
 	device = gf3d_vgraphics_get_default_logical_device();
 
 	gf3d_vqueues_setup_device_queues(gf3d_vgraphics.device);
+	
 	// swap chain!!!
 	gf3d_swapchain_init(gf3d_vgraphics.gpu, gf3d_vgraphics.device, gf3d_vgraphics.surface, renderWidth, renderHeight);
+	
 	gf3d_mesh_init(1024);//TODO: pull this from a parameter
 	gf3d_texture_init(1024);
+	
 	gf3d_pipeline_init(4);// how many different rendering pipelines we need
-	gf3d_vgraphics.pipe = gf3d_pipeline_basic_model_create(device, "shaders/vert.spv", "shaders/frag.spv", gf3d_vgraphics_get_view_extent(), 1024);
+	gf3d_vgraphics.model_pipe = gf3d_pipeline_basic_model_create(device, "shaders/vert.spv", "shaders/frag.spv", gf3d_vgraphics_get_view_extent(), 1024);
+	gf3d_vgraphics.overlay_pipe = gf3d_pipeline_basic_sprite_create(device, "shaders/sprite_vert.spv", "shaders/sprite_frag.spv", gf3d_vgraphics_get_view_extent(), 1024);
 	gf3d_model_manager_init(1024, gf3d_swapchain_get_swap_image_count(), device);
+	//gf3d_sprite_manager_init(5, gf3d_swapchain_get_chain_length(), gf3d_vgraphics_get_default_logical_device());
 	gf3d_command_system_init(8 * gf3d_swapchain_get_swap_image_count(), device);
 
-	gf3d_vgraphics.graphicsCommandPool = gf3d_command_graphics_pool_setup(gf3d_swapchain_get_swap_image_count(), gf3d_vgraphics.pipe);
+	gf3d_vgraphics.graphicsCommandPool = gf3d_command_graphics_pool_setup(gf3d_swapchain_get_swap_image_count());
 
 	gf3d_swapchain_create_depth_image();
-	gf3d_swapchain_setup_frame_buffers(gf3d_vgraphics.pipe);
+	gf3d_swapchain_setup_frame_buffers(gf3d_vgraphics.model_pipe);
 	gf3d_vgraphics_semaphores_create();
 }
 
@@ -671,8 +678,9 @@ void gf3d_vgraphics_rotate_camera(float degrees)
 void gf3d_vgraphics_thirdperson_camera(Vector3D position)
 {
 	Vector3D third = position;
-	third.y += 210; //was 210 , topdown 180
-	third.z += 120; //was 120 , topdown 240
+	third.y += 360; //was 210 , topdown 180 TERRAIN1 = 210 
+	third.z += 180; //was 120 , topdown 240 TERRAIN1 = 120
+	//third.x -= 60;
 
 	gfc_matrix_view(
 		gf3d_vgraphics.ubo.view,
@@ -682,9 +690,14 @@ void gf3d_vgraphics_thirdperson_camera(Vector3D position)
 		);
 }
 
-Pipeline *gf3d_vgraphics_get_graphics_pipeline()
+Pipeline *gf3d_vgraphics_get_graphics_model_pipeline()
 {
-	return gf3d_vgraphics.pipe;
+	return gf3d_vgraphics.model_pipe;
+}
+
+Pipeline *gf3d_vgraphics_get_graphics_overlay_pipeline()
+{
+	return gf3d_vgraphics.overlay_pipe;
 }
 
 Command *gf3d_vgraphics_get_graphics_command_pool()

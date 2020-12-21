@@ -17,7 +17,7 @@
 *@brief a void to initialize basic variables of any slime, hp, model and etc
 *@param a pointer to itself
 */
-Entity *DinoPSpawn();
+Entity *DinoPSpawn(int level);
 
 
 void DinoP_think();

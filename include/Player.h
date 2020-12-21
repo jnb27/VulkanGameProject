@@ -9,6 +9,8 @@ typedef struct
 	int heatlh;
 }PlayerData;
 
-Entity *player_spawn(Vector3D position, const char *modelName);
+Entity *player_spawn(Vector3D position, const char *modelName, int PlayerType, int hp, int mana);
+
+void Overhealing(Entity *self);
 
 #endif // !__Player_H__

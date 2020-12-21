@@ -12,8 +12,9 @@ State 5: Dead?
 
 
 
-Entity *DinoPSpawn(Entity *DinoP)
+Entity *DinoPSpawn(int level)
 {
+	Entity *DinoP;
 	DinoP = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
 	if (!DinoP)
@@ -21,10 +22,16 @@ Entity *DinoPSpawn(Entity *DinoP)
 		slog("failed to spawn a new DinoP enttity");
 		return NULL;
 	}
+	if (level >= 5)
+	{
+		DinoP->model = gf3d_model_load("DinoP");
+	}
+	else{
+		DinoP->model = gf3d_model_load("DinoP");
+	}
 
-	DinoP->model = gf3d_model_load("DinoP");
 	DinoP->health = 50;
-	DinoP->experience = 5;
+	DinoP->experience = 25;
 	DinoP->movespeed = 0.0075;
 	DinoP->STATE = PASSIVE;
 	DinoP->radius = 5.0;
@@ -46,7 +53,44 @@ void DinoP_think(Entity *DinoP)
 {
 	if (!DinoP)return;
 
+	if (DinoP->isPoisoned)
+	{
+		if (SDL_GetTicks() % 1000 == 0)
+		{
+			DinoP->health -= 1;
+			DinoP->PoisonTaken++;
+			slog("%d", DinoP->health);
+			slog("Poison Tick");
 
+		}
+
+		if (DinoP->PoisonTaken == 15)
+		{
+			DinoP->isPoisoned = 0;
+			DinoP->PoisonTaken = 0;
+		}
+	}
+
+	if (DinoP->position.x > 100 || DinoP->position.x < -100 || DinoP->position.y > 100 || DinoP->position.y < -100)
+	{
+		gf3d_entity_free(DinoP);
+	}
+
+	if (DinoP->isBlinded)
+	{
+		DinoP->target = 0;
+		if (SDL_GetTicks() % 1000 == 0)
+		{	
+			DinoP->BlindTime++;
+		}
+
+
+		if (DinoP->BlindTime == 10)
+		{
+			DinoP->isBlinded = 0;
+			DinoP->BlindTime = 0; 
+		}
+	}
 
 	if (DinoP->target != 0)
 	{
@@ -56,6 +100,13 @@ void DinoP_think(Entity *DinoP)
 
 	if (DinoP->health <= 0)
 	{
+		if (DinoP->target->EntityType == Player)
+		{
+			DinoP->target->experience += DinoP->experience;
+			DinoP->target->Slayed += 1;
+			slog("Death by player");
+		}
+
 		gf3d_entity_free(DinoP);
 	}
 

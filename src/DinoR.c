@@ -12,8 +12,9 @@ State 5: Dead?
 
 //Entity *DinoR;
 
-Entity *DinoRSpawn(Entity *DinoR)
+Entity *DinoRSpawn(int level)
 {
+	Entity *DinoR;
 	DinoR = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
 	if (!DinoR)
@@ -21,10 +22,16 @@ Entity *DinoRSpawn(Entity *DinoR)
 		slog("failed to spawn a new DinoR enttity");
 		return NULL;
 	}
-
-	DinoR->model = gf3d_model_load("DinoR");
+	if (level >= 5)
+	{
+		DinoR->model = gf3d_model_load("DinoR2");
+	}
+	else{
+		DinoR->model = gf3d_model_load("DinoR");
+	}
+	
 	DinoR->health = 50;
-	DinoR->experience = 5;
+	DinoR->experience = 15;
 	DinoR->movespeed = 0.01;
 	DinoR->STATE = PASSIVE;
 	DinoR->radius = 5.0;
@@ -62,7 +69,33 @@ void DinoR_think(Entity *DinoR)
 
 	if (DinoR->health <= 0)
 	{
+
+		if (DinoR->target->EntityType == Player)
+		{
+			DinoR->target->experience += DinoR->experience;
+			DinoR->target->Slayed += 1;
+			slog("Death by player");
+		}
+
 		gf3d_entity_free(DinoR);
+	}
+
+	if (DinoR->isPoisoned)
+	{
+		if (SDL_GetTicks() % 1000 == 0)
+		{
+			DinoR->health -= 1;
+			DinoR->PoisonTaken++;
+			slog("%d", DinoR->health);
+			slog("Poison Tick");
+
+		}
+
+		if (DinoR->PoisonTaken == 15)
+		{
+			DinoR->isPoisoned = 0;
+			DinoR->PoisonTaken = 0;
+		}
 	}
 
 }

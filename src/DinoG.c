@@ -1,6 +1,7 @@
 #include "gf3d_entity.h"
 #include "DinoG.h"
 
+
 /*
 Let's Program some states !
 State 1: Passive - Do nothing maybe just walk left and right for fun
@@ -12,8 +13,9 @@ State 5: Dead?
 
 
 
-Entity *DinoGSpawn(Entity *DinoG)
+Entity *DinoGSpawn(int level)
 {
+	Entity *DinoG;
 	DinoG = gf3d_entity_new();
 	//make sure to properly use entity system w/ gf3d_entity_new
 	if (!DinoG)
@@ -21,8 +23,14 @@ Entity *DinoGSpawn(Entity *DinoG)
 		slog("failed to spawn a new DinoG enttity");
 		return NULL;
 	}
+	if (level >= 5)
+	{
+		DinoG->model = gf3d_model_load("DinoG2");
+	}
+	else{
+		DinoG->model = gf3d_model_load("DinoG");
+	}
 
-	DinoG->model = gf3d_model_load("DinoG");
 	DinoG->health = 50;
 	DinoG->experience = 5;
 	DinoG->movespeed = 0.015;
@@ -56,7 +64,31 @@ void DinoG_think(Entity *DinoG)
 
 	if (DinoG->health <= 0)
 	{
+		if (DinoG->target->EntityType == Player)
+		{
+			DinoG->target->experience += DinoG->experience;
+			DinoG->target->Slayed += 1;
+			slog("Death by player");
+		}
+
 		gf3d_entity_free(DinoG);
 	}
 
+	if (DinoG->isPoisoned)
+	{
+		if (SDL_GetTicks() % 1000 == 0)
+		{
+			DinoG->health -= 1;
+			DinoG->PoisonTaken++;
+			slog("%d", DinoG->health);
+			slog("Poison Tick");
+
+		}
+
+		if (DinoG->PoisonTaken == 15)
+		{
+			DinoG->isPoisoned = 0;
+			DinoG->PoisonTaken = 0;
+		}
+	}
 }
