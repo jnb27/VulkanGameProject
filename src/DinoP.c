@@ -25,9 +25,11 @@ Entity *DinoPSpawn(int level)
 	if (level >= 5)
 	{
 		DinoP->model = gf3d_model_load("DinoP");
+		DinoP->model->frameCount = 1;
 	}
 	else{
 		DinoP->model = gf3d_model_load("DinoP");
+		DinoP->model->frameCount = 1;
 	}
 
 	DinoP->health = 50;

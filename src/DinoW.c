@@ -26,9 +26,11 @@ Entity *DinoWSpawn(int level)
 	if (level >= 5)
 	{
 		DinoW->model = gf3d_model_load("DinoW2");
+		DinoW->model->frameCount = 1;
 	}
 	else{
 		DinoW->model = gf3d_model_load("DinoW");
+		DinoW->model->frameCount = 1;
 	}
 
 	DinoW->health = 150;

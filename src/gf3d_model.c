@@ -93,21 +93,26 @@ Model * gf3d_model_load_animated(char * filename, Uint32 startFrame, Uint32 endF
 		return NULL;
 	}
 	model->frameCount = count;
+	slog("%i", count);
+	slog("%i", sizeof(Mesh*));
 	model->mesh = (Mesh**)gfc_allocate_array(sizeof(Mesh*), count);
 	if (!model->mesh)
 	{
 		gf3d_model_free(model);
 		return NULL;
 	}
+	slog("hep");
 	for (i = 0; i < count; i++)
 	{
+		slog("%i", i);
 		snprintf(assetname, GFCLINELEN, "models/%s_%06i.obj", filename, startFrame + i);
 		model->mesh[i] = gf3d_mesh_load(assetname);
 	}
 
+
 	snprintf(assetname, GFCLINELEN, "images/%s.png", filename);
 	model->texture = gf3d_texture_load(assetname);
-
+	
 	return model;
 }
 

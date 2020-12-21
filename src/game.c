@@ -47,8 +47,9 @@ int main(int argc, char *argv[])
 	int checkthis = 1;
 	int PlayerMana = 0;
 	int PlayerHP = 0; 
-	
-	
+	int Toggle = 0;
+	Entity *test = 0;
+	int loaded = 0;
 	
 	
 	
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
 	slog_sync();
 
 	gf3d_entity_init(1024);
-	gf3d_sprite_manager_init(5, gf3d_swapchain_get_chain_length(), gf3d_vgraphics_get_default_logical_device());
+	//gf3d_sprite_manager_init(5, gf3d_swapchain_get_chain_length(), gf3d_vgraphics_get_default_logical_device());
 
 	// main game loop
 	slog("gf3d main loop begin");
@@ -117,7 +118,7 @@ int main(int argc, char *argv[])
 	gfc_matrix_make_translation(world->modelMatrix, world->position);
 
 	
-	mouse = gf3d_sprite_load("images/bg_flat.png",-1,-1,0);
+	mouse = gf3d_sprite_load("images/Menu.png",-1,-1,0);
 
 	SJson *config = sj_load("config/configuration.json");
 
@@ -149,8 +150,9 @@ int main(int argc, char *argv[])
 	}
 
 	//This is where the player is spawned, pick the player based on the config file.
-	Entity *player = player_spawn(vector3d(0, 0, 0), "dino", 2, PlayerHP, PlayerMana);
+	Entity *player = player_spawn(vector3d(0, 0, 0), "dino", 3, PlayerHP, PlayerMana);
 	slog("%i", player->health);
+
 	gf3d_vgraphics_thirdperson_camera(player->position);
 
 
@@ -160,29 +162,46 @@ int main(int argc, char *argv[])
 		keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
 		SDL_GetMouseState(&mousex, &mousey);
 		//update game things here
+		if (Toggle == 1 && loaded == 0)
+		{
+			//test->model = gf3d_model_load_animated("SphereAnim", 1,30 );
+			loaded = 1;
+		}
 
-		gf3d_entity_think_all();
+		if (Toggle == 1)
+		{
+			gf3d_entity_think_all();
+		}
+			mouseFrame = (mouseFrame + 1) % 16;
 
-		mouseFrame = (mouseFrame + 1) % 16;
-
-		// configure render command for graphics command pool
-		// for each mesh, get a command and configure it from the pool
-		bufferFrame = gf3d_vgraphics_render_begin();
-		gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_model_pipeline(), bufferFrame);
-		gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_overlay_pipeline(), bufferFrame);
+			// configure render command for graphics command pool
+			// for each mesh, get a command and configure it from the pool
+			bufferFrame = gf3d_vgraphics_render_begin();
+			gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_model_pipeline(), bufferFrame);
+			gf3d_pipeline_reset_frame(gf3d_vgraphics_get_graphics_overlay_pipeline(), bufferFrame);
 
 
+
+			//2D pipe
+			commandBuffer = gf3d_command_rendering_begin(bufferFrame, gf3d_vgraphics_get_graphics_overlay_pipeline());
+			//2D rendering goes in here I guess
+			//gf3d_sprite_draw_all(bufferFrame, commandBuffer2);
+			gf3d_sprite_draw(mouse, vector2d(0, 0), vector2d(10, 10), 0, bufferFrame, commandBuffer);
+			gf3d_command_rendering_end(commandBuffer);
+		
+
+		if (keys[SDL_SCANCODE_RETURN] || Toggle == 1)
+		{
 		commandBuffer = gf3d_command_rendering_begin(bufferFrame, gf3d_vgraphics_get_graphics_model_pipeline());
-			gf3d_entity_draw_all(bufferFrame, commandBuffer);
-		gf3d_command_rendering_end(commandBuffer);
-
-		//2D pipe
-		//commandBuffer = gf3d_command_rendering_begin(bufferFrame, gf3d_vgraphics_get_graphics_overlay_pipeline());
-		//	//2D rendering goes in here I guess
-		//	//gf3d_sprite_draw_all(bufferFrame, commandBuffer2);
-		//	gf3d_sprite_draw(mouse, vector2d(0, 0), vector2d(10, 10), 0, bufferFrame, commandBuffer);
-		//gf3d_command_rendering_end(commandBuffer);
-
+				gf3d_entity_draw_all(bufferFrame, commandBuffer);
+			gf3d_command_rendering_end(commandBuffer);
+			Toggle = 1;
+		}
+	
+		if (keys[SDL_SCANCODE_GRAVE])
+		{
+			Toggle = 0;
+		}
 
 		gf3d_vgraphics_render_end(bufferFrame);
 
@@ -194,16 +213,42 @@ int main(int argc, char *argv[])
 
 
 
+		if (keys[SDL_SCANCODE_8])
+		{
+			if (player != 0)
+			{
+				gf3d_entity_free(player);
+				player = player_spawn(vector3d(0, 0, 0), "dino", 1, PlayerHP, PlayerMana);
+			}
+		}
 
+		if (keys[SDL_SCANCODE_9])
+		{
+			if (player != 0)
+			{
+				gf3d_entity_free(player);
+				player = player_spawn(vector3d(0, 0, 0), "dino", 2, PlayerHP, PlayerMana);
+			}
+		}
 
-		if (SDL_GetTicks() % 10000 == 0 && player->Slayed >= 15 && checkthis == 1)
+		if (keys[SDL_SCANCODE_0])
+		{
+			if (player != 0)
+			{
+				gf3d_entity_free(player);
+				player = player_spawn(vector3d(0, 0, 0), "dino", 3, PlayerHP, PlayerMana);
+			}
+		}
+
+		if (SDL_GetTicks() % 10000 == 0 /*&& player->Slayed >= 15*/ && checkthis == 1)
 		{
 			world->model = gf3d_model_load("World");
+			world->model->frameCount = 1;
 				checkthis = 0;
 		}
 
 		//Begin code for assigning movement to the models
-		if (SDL_GetTicks() >= 5000 && SDL_GetTicks() % 3000 == 0 && Wave == 1)
+		if (SDL_GetTicks() >= 15000 && SDL_GetTicks() % 3000 == 0 && Wave == 1)
 		{
 			//If the game has been up for 10 seconds, every ten seconds do something THIS IS HORRIBLE
 
@@ -292,10 +337,13 @@ int main(int argc, char *argv[])
 		}
 		if (keys[SDL_SCANCODE_P])
 		{
-			if (SDL_GetTicks() % 3000 == 0)
-			{
-				Entity *slime1 = a_slime_spawn(5);
-			}
+			Wave = 1;
+		}
+
+		if (player->model == NULL)
+		{
+			Toggle = 0;
+			mouse = gf3d_sprite_load("images/GameOver.png", -1, -1, 0);
 		}
 
 	}

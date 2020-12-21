@@ -56,7 +56,7 @@ Entity *create_projectile3(Entity *owner)
 	//This is the oneshot
 	proj = gf3d_entity_new();
 	proj->owner = owner;
-	proj->model = gf3d_model_load("Sphere2");
+	proj->model = gf3d_model_load("Sphere3");
 	proj->model->frameCount = 1;
 	proj->radius = 1;
 	proj->position.x = owner->position.x;
@@ -78,7 +78,7 @@ Entity *Projectile_Knockback(Entity *owner)
 	//This is the oneshot
 	proj = gf3d_entity_new();
 	proj->owner = owner;
-	proj->model = gf3d_model_load("Sphere2");
+	proj->model = gf3d_model_load("Sphere6");
 	proj->model->frameCount = 1;
 	proj->radius = 5;
 	proj->position.x = owner->position.x;
@@ -108,7 +108,7 @@ Entity *Projectile_Poison(Entity *owner)
 	//This is the oneshot
 	proj = gf3d_entity_new();
 	proj->owner = owner;
-	proj->model = gf3d_model_load("Sphere");
+	proj->model = gf3d_model_load("Sphere5");
 	proj->model->frameCount = 1;
 	proj->radius = 1;
 	proj->position.x = owner->position.x;
@@ -139,7 +139,7 @@ Entity *Projectile_Blind(Entity *owner)
 	//This is the oneshot
 	proj = gf3d_entity_new();
 	proj->owner = owner;
-	proj->model = gf3d_model_load("Sphere");
+	proj->model = gf3d_model_load("Sphere4");
 	proj->model->frameCount = 1;
 	proj->radius = 1;
 	proj->position.x = owner->position.x;

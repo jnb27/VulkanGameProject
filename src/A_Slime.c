@@ -24,9 +24,11 @@ Entity *a_slime_spawn(int level)
 	if (level >= 3)
 	{
 		Slime->model = gf3d_model_load("DinoB2");
+		Slime->model->frameCount = 1;
 	}
 	else{
 		Slime->model = gf3d_model_load("DinoB");
+		Slime->model->frameCount = 1;
 	}
 	
 	Slime->health = 30*level;

@@ -147,9 +147,10 @@ void gf3d_vgraphics_init(
 	gf3d_vgraphics.overlay_pipe = gf3d_pipeline_basic_sprite_create(device, "shaders/sprite_vert.spv", "shaders/sprite_frag.spv", gf3d_vgraphics_get_view_extent(), 1024);
 	gf3d_model_manager_init(1024, gf3d_swapchain_get_swap_image_count(), device);
 	//gf3d_sprite_manager_init(5, gf3d_swapchain_get_chain_length(), gf3d_vgraphics_get_default_logical_device());
-	gf3d_command_system_init(8 * gf3d_swapchain_get_swap_image_count(), device);
+	gf3d_command_system_init(8, device);
 
 	gf3d_vgraphics.graphicsCommandPool = gf3d_command_graphics_pool_setup(gf3d_swapchain_get_swap_image_count());
+	gf3d_sprite_manager_init(1024, gf3d_swapchain_get_swap_image_count(), device);
 
 	gf3d_swapchain_create_depth_image();
 	gf3d_swapchain_setup_frame_buffers(gf3d_vgraphics.model_pipe);
@@ -494,18 +495,19 @@ Bool gf3d_vgraphics_device_validate(VkPhysicalDevice device)
 
 VkPhysicalDevice gf3d_vgraphics_select_device()
 {
-	unsigned int i;
+	int i;
 	VkPhysicalDevice chosen = VK_NULL_HANDLE;
-	VkPhysicalDevice *valid = (VkPhysicalDevice*)gfc_allocate_array(sizeof(VkPhysicalDevice), gf3d_vgraphics.device_count);
+	//VkPhysicalDevice *valid = (VkPhysicalDevice*)gfc_allocate_array(sizeof(VkPhysicalDevice), gf3d_vgraphics.device_count);
 	for (i = 0; i < gf3d_vgraphics.device_count; i++)
 	{
 		if (gf3d_vgraphics_device_validate(gf3d_vgraphics.devices[i]))
 		{
-			valid[i] = gf3d_vgraphics.devices[i];
-			if (valid[i] != VK_NULL_HANDLE)chosen = valid[i];
+			/*valid[i] = gf3d_vgraphics.devices[i];
+			if (valid[i] != VK_NULL_HANDLE)chosen = valid[i];*/
+			chosen = gf3d_vgraphics.devices[i];
 		}
 	}
-	if (chosen == VK_NULL_HANDLE)chosen = gf3d_vgraphics.devices[0];
+	//if (chosen == VK_NULL_HANDLE)chosen = gf3d_vgraphics.devices[0];
 	return chosen;
 }
 

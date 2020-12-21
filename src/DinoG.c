@@ -26,9 +26,11 @@ Entity *DinoGSpawn(int level)
 	if (level >= 5)
 	{
 		DinoG->model = gf3d_model_load("DinoG2");
+		DinoG->model->frameCount = 1;
 	}
 	else{
 		DinoG->model = gf3d_model_load("DinoG");
+		DinoG->model->frameCount = 1;
 	}
 
 	DinoG->health = 50;

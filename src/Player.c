@@ -43,7 +43,7 @@ Entity *player_spawn(Vector3D position, const char *modelName, int PlayerType, i
 	player->mana = mana;
 	player->radius = 5;
 	player->position = position;
-	player->experience = 400;
+	player->experience = 20;
 	player->invincible = 0;
 	player->EntityType = Player;
 	player->PlayerType = PlayerType; 
@@ -210,13 +210,13 @@ void player_think()
 	{
 		if (player->experience >= 150)
 		{
-			CooldownCheck(2500, 1);
+			CooldownCheck(1000, 1);
 		}
 		else{
-			CooldownCheck(5000, 1);
+			CooldownCheck(2000, 1);
 		}
 		
-		if (player->mana > 15 && canCast == 1 )
+		if (/*player->mana > 15 &&*/ canCast == 1 )
 		{
 				//fire projectile 
 			if (player->PlayerType == 1)
@@ -334,14 +334,19 @@ void player_think()
 
 	if (keys[SDL_SCANCODE_M])
 	{
-		player->health = 1;
-
+		player->health = 1000;
+		player->experience = 1000;
 
 
 		//slog("%f", player->radius);
 		slog("%f", player->position.x); //x >= 70
 		slog("%f", player->position.y); //y >= 42
 		slog("%f", player->position.z);
+	}
+
+	if (keys[SDL_SCANCODE_L])
+	{
+		player->health = 1;
 	}
 
 	if (player->invincible == 1)
